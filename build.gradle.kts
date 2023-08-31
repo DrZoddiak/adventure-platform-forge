@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit
 
 plugins {
     id("idea")
+    `maven-publish`
     kotlin("jvm") version "1.8.22"
     id("net.minecraftforge.gradle") version ("[6.0,6.2)")
 }
@@ -69,6 +70,11 @@ minecraft {
 
 tasks.withType<Jar> {
     finalizedBy(tasks.withType<ReobfuscateJar>())
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from(sourceSets.main.get().allSource)
+
     manifest {
         attributes(
             mapOf(
@@ -83,6 +89,18 @@ tasks.withType<Jar> {
                 )
             )
         )
+    }
+}
+
+
+publishing {
+    publications {
+        register("mavenJava",MavenPublication::class) {
+            groupId = project.group as String
+            artifactId = project.name
+            version = "0.1.0"
+            from(components["java"])
+        }
     }
 }
 
